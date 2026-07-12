@@ -86,6 +86,7 @@
 <br><br>
 
 <textarea id="codigoHtml" placeholder="Aquí aparecerá el HTML leído o pega manualmente varios bloques <li>...</li>"></textarea>
+<textarea id="codigoHtml2" placeholder="url convertida para ser enviada..."></textarea>
 
 <button onclick="leerDatos()">Leer datos</button>
 
@@ -104,7 +105,7 @@ async function leerURL() {
     const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
     alert(urlFinal);
 
-    document.getElementById("codigoHtml").value = urlFinal;
+    document.getElementById("codigoHtml2").value = urlFinal;
 
 
     try {
