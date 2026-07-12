@@ -102,7 +102,10 @@ async function leerURL() {
     }
     
     const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
-    alert(urlFinal );
+    alert(urlFinal);
+
+    document.getElementById("codigoHtml").value = urlFinal;
+
 
     try {
         //const urlFinal = "http://localhost:3000/proxy?url=" + encodeURIComponent(url);
