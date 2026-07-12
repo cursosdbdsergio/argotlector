@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Lector de Bloques HTML (Multi‑bloque + Leer URL)</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 30px;
+        background: #f5f5f5;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 300px;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        resize: vertical;
+        background: #fff;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+
+    button {
+        margin-top: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        background: #0078ff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #005fcc;
+    }
+
+    #resultado {
+        margin-top: 25px;
+        padding: 15px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .bloque {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .dato {
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .dato span {
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<h2>Lector de datos desde múltiples bloques HTML</h2>
+
+<!-- ⭐ Campo para escribir la URL -->
+<input type="text" id="urlInput" placeholder="Escribe aquí una URL para leer su contenido HTML...">
+
+<button onclick="leerURL()">Leer URL</button>
+
+<br><br>
+
+<textarea id="codigoHtml" placeholder="Aquí aparecerá el HTML leído o pega manualmente varios bloques <li>...</li>"></textarea>
+
+<button onclick="leerDatos()">Leer datos</button>
+
+<div id="resultado"></div>
+
+<script>
+// ⭐ FUNCIÓN PARA LEER UNA URL Y VOLCAR EL HTML EN EL TEXTAREA
+async function leerURL() {
+    const url = document.getElementById("urlInput").value.trim();
+
+    if (!url) {
+        alert("Debes escribir una URL primero.");
+        return;
+    }
+    
+    const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
+    alert(urlFinal );
+
+    try {
+        //const urlFinal = "http://localhost:3000/proxy?url=" + encodeURIComponent(url);
+        
+        //const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
+       
+
+        const respuesta = await fetch(urlFinal);
+        const texto = await respuesta.text();
+
+        document.getElementById("codigoHtml").value = texto;
+
+        alert("Contenido HTML cargado correctamente.");
+    } catch (error) {
+        alert("Error al leer la URL. Puede que el servidor bloquee la petición.");
+        console.error(error);
+    }
+}
+
+
+// ⭐ FUNCIÓN PRINCIPAL PARA LEER LOS BLOQUES <li>
+function leerDatos() {
+
+    const htmlTexto = document.getElementById("codigoHtml").value.trim();
+
+    if (!htmlTexto) {
+        alert("Debes pegar uno o más bloques HTML primero.");
+        return;
+    }
+
+    // Convertimos el texto en DOM real
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlTexto, "text/html");
+
+    // ⭐ Seleccionamos TODOS los bloques <li>
+    const items = doc.querySelectorAll("li");
+
+    if (items.length === 0) {
+        alert("No se encontraron elementos <li> en el código.");
+        return;
+    }
+
+    let salidaFinal = "";
+    let contador    = 0;
+
+    // ⭐ Procesamos cada bloque <li>
+    items.forEach((item) => {
+
+        // EAN / ISBN-13
+        const eanNode = item.querySelector("dd.ean_dc");
+        const ean = eanNode ? eanNode.innerText.trim() : "";
+        
+
+        // Autor (justo antes del EAN)
+        let autor = "";
+        let editorial = "";
+        let idioma = "";
+
+        if (eanNode) {
+            const ddList = [...item.querySelectorAll("dd")];
+            const pos = ddList.indexOf(eanNode);
+
+            autor     = ddList[pos - 1]?.innerText.trim() || "";
+            editorial = ddList[pos + 1]?.innerText.trim() || "";
+            idioma    = ddList[pos + 2]?.innerText.trim() || "";
+        }
+
+        // Otros datos
+        let detalles_temporal = item.querySelector(".portada a")?.getAttribute("href") || "";
+        const detalles        = "https://www.argot.es" + detalles_temporal;
+
+        const foto = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
+        const titulo = item.querySelector("dd.title a")?.innerText.trim() || "";
+        const descuento = item.querySelector(".discount")?.innerText.trim() || "";
+        const disponibilidad = item.querySelector("dd.disponibilidad")?.innerText.trim() || "";
+        const precioAnterior = item.querySelector("p.precio strike")?.innerText.trim() || "";
+        const precioActual   = item.querySelector("p.precio strong")?.innerText.trim() || "";
+
+        // ⭐ Construimos el bloque de salida solo si detalles_temporal != ""
+        if (detalles_temporal !== "") {
+            contador++; // aumenta en cada bloque
+
+            salidaFinal += `
+                <div class="bloque">
+                    <div class="dato"><span>Bloque #${contador}</span></div>
+                    <div class="dato"><span>Detalles:</span> ${detalles}</div>
+                    <div class="dato"><span>Foto:</span> ${foto}</div>
+                    <div class="dato"><span>Título:</span> ${titulo}</div>
+                    <div class="dato"><span>Descuento:</span> ${descuento}</div>
+                    <div class="dato"><span>EAN / ISBN-13:</span> ${ean}</div>
+                    <div class="dato"><span>Autor:</span> ${autor}</div>
+                    <div class="dato"><span>Editorial:</span> ${editorial}</div>
+                    <div class="dato"><span>Idioma:</span> ${idioma}</div>
+                    <div class="dato"><span>Disponibilidad:</span> ${disponibilidad}</div>
+                    <div class="dato"><span>Precio anterior:</span> ${precioAnterior}</div>
+                    <div class="dato"><span>Precio actual:</span> ${precioActual}</div>
+                </div>
+            `;
+        }
+    });
+
+    // ⭐ Mostrar todo en pantalla
+    document.getElementById("resultado").innerHTML = salidaFinal;
+}
+</script>
+
+</body>
+</html>
