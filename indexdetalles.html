@@ -79,18 +79,6 @@ function texto(node) {
     return node ? node.textContent.trim() : "";
 }
 
-function buscarTextoPorEtiqueta(item, etiqueta) {
-    const dts = [...item.querySelectorAll("dt")];
-    const dt = dts.find(el => texto(el).replace(/\s+/g, " ").includes(etiqueta));
-    if (!dt) return "";
-    let sib = dt.nextElementSibling;
-    while (sib) {
-        if (sib.tagName === "DD") return texto(sib);
-        sib = sib.nextElementSibling;
-    }
-    return "";
-}
-
 function leerDatos() {
 
     const htmlTexto = document.getElementById("codigoHtml").value.trim();
