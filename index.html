@@ -148,15 +148,18 @@ function leerDatos() {
         return;
     }
 
-    let salidaFinal = "";
-    let contador    = 0;
+    let salidaFinal  = "";
+    let salidaFinal2 = "";
+    let contador     = 0;
 
     // ⭐ Procesamos cada bloque <li>
     items.forEach((item) => {
 
+        let terminar = false; //.. para controlar que solo lea el primero 
+
         // EAN / ISBN-13
         const eanNode = item.querySelector("dd.ean_dc");
-        const ean = eanNode ? eanNode.innerText.trim() : "";
+        const ean     = eanNode ? eanNode.innerText.trim() : "";
         
         // Autor (justo antes del EAN)
         let autor = "";
@@ -177,7 +180,10 @@ function leerDatos() {
         const detalles          = "https://www.argot.es" + detalles_temporal;
 
         const foto           = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
+
         const titulo         = item.querySelector("dd.title a")?.innerText.trim() || "";
+        if (titulo=="El hombre que compró un automóvil") terminar = true;
+
         const descuento      = item.querySelector(".discount")?.innerText.trim() || "";
         const disponibilidad = item.querySelector("dd.disponibilidad")?.innerText.trim() || "";
         const precioAnterior = item.querySelector("p.precio strike")?.innerText.trim() || "";
@@ -205,6 +211,8 @@ function leerDatos() {
                 </div>
             `;
         }
+        
+        if (terminar) return;
     });
 
 
@@ -215,12 +223,12 @@ function leerDatos() {
     salidaFinal2 += `
         <div class="bloque">
             <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
-
+    
         </div>
     `;
 
     // ⭐ Mostrar todo en pantalla
-    document.getElementById("resultado").innerHTML = salidaFinal; //+ salidaFinal2;
+    document.getElementById("resultado").innerHTML = salidaFinal + salidaFinal2;
 
 
 }
