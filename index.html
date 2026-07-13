@@ -183,6 +183,8 @@ function leerDatos() {
         const precioAnterior = item.querySelector("p.precio strike")?.innerText.trim() || "";
         const precioActual   = item.querySelector("p.precio strong")?.innerText.trim() || "";
 
+        //.. Año de edición: <dd itemprop="datePublished">2026</dd>
+        const edicionyear    = item.querySelector("dd.datePublished")?.innerText.trim() || "";
 
 
         // ⭐ Construimos el bloque de salida solo si detalles_temporal != ""
@@ -204,7 +206,8 @@ function leerDatos() {
                     <div class="dato"><span>Precio anterior:</span> ${precioAnterior}</div>
                     <div class="dato"><span>Precio actual:</span> ${precioActual}</div>
 
-                    
+                    <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
+
                 </div>
             `;
         }
