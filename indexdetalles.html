@@ -136,17 +136,6 @@ function leerDatos() {
         const precioAnterior = texto(item.querySelector("p.precio strike"));
         const precioActual = texto(item.querySelector("p.precio strong"));
         
-        //const edicionyear = texto(item.querySelector('dd[itemprop="datePublished"]')) || buscarTextoPorEtiqueta(item, "Año de edición:");
-        const edicionyear = buscarTextoPorEtiqueta(item, "Año de edición:");
-        
-        const paginas = texto(item.querySelector('dd[itemprop="numberOfPages"]')) || buscarTextoPorEtiqueta(item, "Páginas:");
-        const encuadernacion = buscarTextoPorEtiqueta(item, "Encuadernación:");
-        const alto = buscarTextoPorEtiqueta(item, "Alto:");
-        const ancho = buscarTextoPorEtiqueta(item, "Ancho:");
-        const coleccion = buscarTextoPorEtiqueta(item, "Colección:");
-        const ilustracion = buscarTextoPorEtiqueta(item, "Ilustración:");
-        const sinopsis = texto(item.querySelector('p[itemprop="description"]')) || buscarTextoPorEtiqueta(item, "Sinopsis:");
-
         if (detalles_temporal !== "" || edicionyear || paginas || sinopsis) {
             contador++;
             salidaFinal += `
@@ -163,21 +152,36 @@ function leerDatos() {
                     <div class="dato"><span>Disponibilidad:</span> ${disponibilidad}</div>
                     <div class="dato"><span>Precio anterior:</span> ${precioAnterior}</div>
                     <div class="dato"><span>Precio actual:</span> ${precioActual}</div>
-                    
-                    <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
-                    <div class="dato"><span>Páginas:</span> ${paginas}</div>
-                    <div class="dato"><span>Encuadernación:</span> ${encuadernacion}</div>
-                    <div class="dato"><span>Alto:</span> ${alto}</div>
-                    <div class="dato"><span>Ancho:</span> ${ancho}</div>
-                    <div class="dato"><span>Colección:</span> ${coleccion}</div>
-                    <div class="dato"><span>Ilustración:</span> ${ilustracion}</div>
-                    <div class="dato"><span>Sinopsis:</span> ${sinopsis}</div>
-                </div>
             `;
         }
     });
 
+    //const edicionyear = texto(item.querySelector('dd[itemprop="datePublished"]')) || buscarTextoPorEtiqueta(item, "Año de edición:");
+    //const edicionyear = buscarTextoPorEtiqueta(item, "Año de edición:");
+    const edicionyear    = doc.querySelector('dd[itemprop="datePublished"]')?.textContent.trim() || "";
+    const paginas        = ""; //texto(item.querySelector('dd[itemprop="numberOfPages"]')) || buscarTextoPorEtiqueta(item, "Páginas:");
+    const encuadernacion = ""; //buscarTextoPorEtiqueta(item, "Encuadernación:");
+    const alto           = ""; //buscarTextoPorEtiqueta(item, "Alto:");
+    const ancho          = ""; //buscarTextoPorEtiqueta(item, "Ancho:");
+    const coleccion      = ""; //buscarTextoPorEtiqueta(item, "Colección:");
+    const ilustracion    = ""; //buscarTextoPorEtiqueta(item, "Ilustración:");
+    const sinopsis       = ""; //texto(item.querySelector('p[itemprop="description"]')) || buscarTextoPorEtiqueta(item, "Sinopsis:");
+
+    salidaFinal += `
+            
+            <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
+            <div class="dato"><span>Páginas:</span> ${paginas}</div>
+            <div class="dato"><span>Encuadernación:</span> ${encuadernacion}</div>
+            <div class="dato"><span>Alto:</span> ${alto}</div>
+            <div class="dato"><span>Ancho:</span> ${ancho}</div>
+            <div class="dato"><span>Colección:</span> ${coleccion}</div>
+            <div class="dato"><span>Ilustración:</span> ${ilustracion}</div>
+            <div class="dato"><span>Sinopsis:</span> ${sinopsis}</div>
+        </div>
+    `;
+
     document.getElementById("resultado").innerHTML = salidaFinal || "<p>No se encontraron datos.</p>";
+
 }
 </script>
 
