@@ -184,7 +184,7 @@ function leerDatos() {
         const precioActual   = item.querySelector("p.precio strong")?.innerText.trim() || "";
 
         //.. Año de edición: <dd itemprop="datePublished">2026</dd>
-        const edicionyear    = item.querySelector("dd.datePublished")?.innerText.trim() || "";
+        const edicionyear    = item.querySelector('dd[itemprop="datePublished"]')?.innerText.trim() || "";
 
 
         // ⭐ Construimos el bloque de salida solo si detalles_temporal != ""
