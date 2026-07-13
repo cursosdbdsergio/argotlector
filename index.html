@@ -79,12 +79,10 @@
 <h2>Lector de datos desde múltiples bloques HTML</h2>
 
 <!-- ⭐ Campo para escribir la URL -->
-<input type="text" id="urlInput" placeholder="Escribe aquí una URL para leer su contenido HTML...">
-<input type="text" id="codigoHtml2" placeholder="url convertida para ser enviada...">
-
-<button onclick="leerURL()">Leer URL</button>
-
-<br><br>
+<!--<input type="text" id="urlInput" placeholder="Escribe aquí una URL para leer su contenido HTML...">-->
+<!--<input type="text" id="codigoHtml2" placeholder="url convertida para ser enviada...">-->
+<!--<button onclick="leerURL()">Leer URL</button>-->
+<!--<br><br>-->
 
 <textarea id="codigoHtml" placeholder="Aquí aparecerá el HTML leído o pega manualmente varios bloques <li>...</li>"></textarea>
 
@@ -95,7 +93,7 @@
 
 <script>
 // ⭐ FUNCIÓN PARA LEER UNA URL Y VOLCAR EL HTML EN EL TEXTAREA
-async function leerURL() {
+/*async function leerURL() {
     const url = document.getElementById("urlInput").value.trim();
 
     if (!url) {
@@ -104,7 +102,7 @@ async function leerURL() {
     }
     
     const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
-    alert(urlFinal);
+    //alert(urlFinal);
 
     document.getElementById("codigoHtml2").value = urlFinal;
 
@@ -125,7 +123,7 @@ async function leerURL() {
         alert("Error al leer la URL. Puede que el servidor bloquee la petición.");
         console.error(error);
     }
-}
+}*/
 
 
 // ⭐ FUNCIÓN PRINCIPAL PARA LEER LOS BLOQUES <li>
@@ -160,7 +158,6 @@ function leerDatos() {
         const eanNode = item.querySelector("dd.ean_dc");
         const ean = eanNode ? eanNode.innerText.trim() : "";
         
-
         // Autor (justo antes del EAN)
         let autor = "";
         let editorial = "";
@@ -175,16 +172,18 @@ function leerDatos() {
             idioma    = ddList[pos + 2]?.innerText.trim() || "";
         }
 
-        // Otros datos
-        let detalles_temporal = item.querySelector(".portada a")?.getAttribute("href") || "";
-        const detalles        = "https://www.argot.es" + detalles_temporal;
+        //.. Otros datos
+        let   detalles_temporal = item.querySelector(".portada a")?.getAttribute("href") || "";
+        const detalles          = "https://www.argot.es" + detalles_temporal;
 
-        const foto = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
-        const titulo = item.querySelector("dd.title a")?.innerText.trim() || "";
-        const descuento = item.querySelector(".discount")?.innerText.trim() || "";
+        const foto           = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
+        const titulo         = item.querySelector("dd.title a")?.innerText.trim() || "";
+        const descuento      = item.querySelector(".discount")?.innerText.trim() || "";
         const disponibilidad = item.querySelector("dd.disponibilidad")?.innerText.trim() || "";
         const precioAnterior = item.querySelector("p.precio strike")?.innerText.trim() || "";
         const precioActual   = item.querySelector("p.precio strong")?.innerText.trim() || "";
+
+
 
         // ⭐ Construimos el bloque de salida solo si detalles_temporal != ""
         if (detalles_temporal !== "") {
@@ -204,6 +203,8 @@ function leerDatos() {
                     <div class="dato"><span>Disponibilidad:</span> ${disponibilidad}</div>
                     <div class="dato"><span>Precio anterior:</span> ${precioAnterior}</div>
                     <div class="dato"><span>Precio actual:</span> ${precioActual}</div>
+
+                    
                 </div>
             `;
         }
