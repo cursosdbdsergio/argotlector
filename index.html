@@ -205,7 +205,6 @@ function leerDatos() {
                     <div class="dato"><span>Disponibilidad:</span> ${disponibilidad}</div>
                     <div class="dato"><span>Precio anterior:</span> ${precioAnterior}</div>
                     <div class="dato"><span>Precio actual:</span> ${precioActual}</div>
-
                 </div>
             `;
         }
@@ -214,18 +213,22 @@ function leerDatos() {
             terminar = true;
             break;
         }
-
-        
+       
     };
-
 
     //.. Año de edición: <dd itemprop="datePublished">2026</dd>
     const edicionyear = doc.querySelector('dd[itemprop="datePublished"]')?.innerText.trim() || "";
-                        //doc.querySelector('dd[itemprop="datePublished"]')?.textContent.trim() || "";
+    const paginas     = doc.querySelector('dd[itemprop="numberOfPages"]')?.innerText.trim() || "";
+    const alto2       = ddDelDt(ficha, "Alto:");
+    const ancho2      = ddDelDt(ficha, "Ancho:");
+
 
     salidaFinal2 += `
         <div class="bloque">
             <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
+            <div class="dato"><span>Páginas:</span> ${paginas}</div>
+            <div class="dato"><span>Alto:</span> ${alto2}</div>
+            <div class="dato"><span>Ancho:</span> ${ancho2}</div>
     
         </div>
     `;
@@ -236,6 +239,23 @@ function leerDatos() {
     if (terminar) return;
 
 }
+
+//.. Function para hallar Alto y Ancho
+// busca todos los dt y sus dd siguientes y empareja por texto del dt
+function ddDelDt(ficha, etiqueta) {
+    const dts = [...ficha.querySelectorAll('dt')];
+    for (const dt of dts) {
+        if (dt.textContent.replace(/\s+/g, ' ').includes(etiqueta)) {
+        let sib = dt.nextElementSibling;
+        while (sib) {
+            if (sib.tagName === 'DD') return sib.textContent.trim();
+            sib = sib.nextElementSibling;
+        }
+        }
+    }
+    return "";
+}
+
 </script>
 
 </body>
