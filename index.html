@@ -229,8 +229,8 @@ function leerDatos() {
     const coleccion   = ddsGenre[2]?.textContent.trim() || "";
     const ilustracion = ddsGenre[3]?.textContent.trim() || "";
 
-    
-    
+    //.. Sinopsis
+    const sinopsis    = doc.querySelector('#tabsinopsis p[itemprop="description"]')?.textContent.trim() || "";
 
     salidaFinal2 += `
         <div class="bloque">
@@ -240,7 +240,7 @@ function leerDatos() {
             <div class="dato"><span>Ancho:</span>          ${ancho}</div>
             <div class="dato"><span>Colección:</span>      ${coleccion}</div>
             <div class="dato"><span>Ilustración:</span>    ${ilustracion}</div>
-
+            <div class="dato"><span>Ilustración:</span>    ${sinopsis}</div>
         </div>
     `;
 
