@@ -219,17 +219,28 @@ function leerDatos() {
     //.. Año de edición: <dd itemprop="datePublished">2026</dd>
     const edicionyear = doc.querySelector('dd[itemprop="datePublished"]')?.innerText.trim() || "";
     const paginas     = doc.querySelector('dd[itemprop="numberOfPages"]')?.innerText.trim() || "";
-    const alto2       = ddDelDt(ficha, "Alto:");
-    const ancho2      = ddDelDt(ficha, "Ancho:");
+    
+    //.. Alto y Ancho en cm
+    const ddsGenre    = doc.querySelectorAll('dd[itemprop="genre"]');
+    const alto        = ddsGenre[0]?.textContent.trim() || "";
+    const ancho       = ddsGenre[1]?.textContent.trim() || "";
 
+    //.. Colección e Ilustración
+    const coleccion   = ddsGenre[2]?.textContent.trim() || "";
+    const ilustracion = ddsGenre[2]?.textContent.trim() || "";
+
+    
+    
 
     salidaFinal2 += `
         <div class="bloque">
             <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
-            <div class="dato"><span>Páginas:</span> ${paginas}</div>
-            <div class="dato"><span>Alto:</span> ${alto2}</div>
-            <div class="dato"><span>Ancho:</span> ${ancho2}</div>
-    
+            <div class="dato"><span>Páginas:</span>        ${paginas}</div>
+            <div class="dato"><span>Alto:</span>           ${alto}</div>
+            <div class="dato"><span>Ancho:</span>          ${ancho}</div>
+            <div class="dato"><span>Colección:</span>      ${coleccion}</div>
+            <div class="dato"><span>Ilustración:</span>    ${ilustracion}</div>
+
         </div>
     `;
 
