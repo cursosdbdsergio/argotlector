@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Lector de datos de libro</title>
+<meta charset="UTF-8">
+<title>Lector de Bloques HTML (Multi‑bloque + Leer URL)</title>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -16,14 +17,22 @@
 
     textarea {
         width: 100%;
-        height: 320px;
+        height: 300px;
         padding: 10px;
         font-size: 14px;
         border-radius: 6px;
         border: 1px solid #ccc;
         resize: vertical;
         background: #fff;
-        box-sizing: border-box;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
     }
 
     button {
@@ -67,66 +76,121 @@
 </head>
 <body>
 
-<h2>Lector de datos desde bloques HTML (Detalles de un libro)</h2>
+<h2>Lector de datos desde múltiples bloques HTML</h2>
 
-<textarea id="codigoHtml" placeholder="Pega aquí el HTML completo o varios bloques <li>...</li>"></textarea>
+<!-- ⭐ Campo para escribir la URL -->
+<!--<input type="text" id="urlInput" placeholder="Escribe aquí una URL para leer su contenido HTML...">-->
+<!--<input type="text" id="codigoHtml2" placeholder="url convertida para ser enviada...">-->
+<!--<button onclick="leerURL()">Leer URL</button>-->
+<!--<br><br>-->
+
+<textarea id="codigoHtml" placeholder="Aquí aparecerá el HTML leído o pega manualmente varios bloques <li>...</li>"></textarea>
+
+
 <button onclick="leerDatos()">Leer datos</button>
 
 <div id="resultado"></div>
 
 <script>
-function texto(node) {
-    return node ? node.textContent.trim() : "";
-}
+// ⭐ FUNCIÓN PARA LEER UNA URL Y VOLCAR EL HTML EN EL TEXTAREA
+/*async function leerURL() {
+    const url = document.getElementById("urlInput").value.trim();
 
+    if (!url) {
+        alert("Debes escribir una URL primero.");
+        return;
+    }
+    
+    const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
+    //alert(urlFinal);
+
+    document.getElementById("codigoHtml2").value = urlFinal;
+
+
+    try {
+        //const urlFinal = "http://localhost:3000/proxy?url=" + encodeURIComponent(url);
+        
+        //const urlFinal = "https://argotlector-proxy.onrender.com/proxy?url=" + encodeURIComponent(url);
+       
+
+        const respuesta = await fetch(urlFinal);
+        const texto = await respuesta.text();
+
+        document.getElementById("codigoHtml").value = texto;
+
+        alert("Contenido HTML cargado correctamente.");
+    } catch (error) {
+        alert("Error al leer la URL. Puede que el servidor bloquee la petición.");
+        console.error(error);
+    }
+}*/
+
+
+// ⭐ FUNCIÓN PRINCIPAL PARA LEER LOS BLOQUES <li>
 function leerDatos() {
 
     const htmlTexto = document.getElementById("codigoHtml").value.trim();
+
     if (!htmlTexto) {
         alert("Debes pegar uno o más bloques HTML primero.");
         return;
     }
 
+    // Convertimos el texto en DOM real
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlTexto, "text/html");
 
+    // ⭐ Seleccionamos TODOS los bloques <li>
     const items = doc.querySelectorAll("li");
-    const raiz = items.length ? items : [doc];
 
-    if (raiz.length === 0) {
-        alert("No se encontraron bloques para procesar.");
+    if (items.length === 0) {
+        alert("No se encontraron elementos <li> en el código.");
         return;
     }
 
-    let salidaFinal = "";
-    let contador = 0;
+    let salidaFinal  = "";
+    let salidaFinal2 = "";
+    let contador     = 0;
+    let terminar     = false; //.. para controlar que solo lea el primero 
 
-    raiz.forEach((item) => {
-        const ean = texto(item.querySelector("dd.ean_dc"));
+    // ⭐ Procesamos cada bloque <li>
+    //items.forEach((item) => {
+    for (const item of items) {
+
+        // resto de tu código
+
+        // EAN / ISBN-13
+        const eanNode = item.querySelector("dd.ean_dc");
+        const ean     = eanNode ? eanNode.innerText.trim() : "";
+        
+        // Autor (justo antes del EAN)
         let autor = "";
         let editorial = "";
         let idioma = "";
 
-        const eanNode = item.querySelector("dd.ean_dc");
         if (eanNode) {
             const ddList = [...item.querySelectorAll("dd")];
             const pos = ddList.indexOf(eanNode);
-            autor = texto(ddList[pos - 1]);
-            editorial = texto(ddList[pos + 1]);
-            idioma = texto(ddList[pos + 2]);
+
+            autor     = ddList[pos - 1]?.innerText.trim() || "";
+            editorial = ddList[pos + 1]?.innerText.trim() || "";
+            idioma    = ddList[pos + 2]?.innerText.trim() || "";
         }
 
-        const detalles_temporal = item.querySelector(".portada a")?.getAttribute("href") || item.querySelector(".portada-detalle a")?.getAttribute("href") || "";
-        const detalles = detalles_temporal ? (detalles_temporal.startsWith("http") ? detalles_temporal : "https://www.argot.es" + detalles_temporal) : "";
-        const foto = item.querySelector(".portada img.foto")?.getAttribute("src") || item.querySelector("#detportada")?.getAttribute("src") || "";
-        const titulo = texto(item.querySelector("dd.title a")) || texto(item.querySelector("h1[itemprop='name']"));
-        const descuento = texto(item.querySelector(".discount"));
-        const disponibilidad = texto(item.querySelector("dd.disponibilidad"));
-        const precioAnterior = texto(item.querySelector("p.precio strike"));
-        const precioActual = texto(item.querySelector("p.precio strong"));
-        
-        if (detalles_temporal !== "" || edicionyear || paginas || sinopsis) {
-            contador++;
+        //.. Otros datos
+        let   detalles_temporal = item.querySelector(".portada a")?.getAttribute("href") || "";
+        const detalles          = "https://www.argot.es" + detalles_temporal;
+        const foto           = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
+        const titulo         = item.querySelector("dd.title a")?.innerText.trim() || "";
+        const descuento      = item.querySelector(".discount")?.innerText.trim() || "";
+        const disponibilidad = item.querySelector("dd.disponibilidad")?.innerText.trim() || "";
+        const precioAnterior = item.querySelector("p.precio strike")?.innerText.trim() || "";
+        const precioActual   = item.querySelector("p.precio strong")?.innerText.trim() || "";
+
+        // ⭐ Construimos el bloque de salida solo si detalles_temporal != ""
+        if (detalles_temporal !== "") {
+            contador++; // aumenta en cada bloque
+
             salidaFinal += `
                 <div class="bloque">
                     <div class="dato"><span>Bloque #${contador}</span></div>
@@ -141,38 +205,68 @@ function leerDatos() {
                     <div class="dato"><span>Disponibilidad:</span> ${disponibilidad}</div>
                     <div class="dato"><span>Precio anterior:</span> ${precioAnterior}</div>
                     <div class="dato"><span>Precio actual:</span> ${precioActual}</div>
-                </div>    
+                </div>
             `;
         }
-    });
 
-    //const edicionyear = texto(item.querySelector('dd[itemprop="datePublished"]')) || buscarTextoPorEtiqueta(item, "Año de edición:");
-    //const edicionyear = buscarTextoPorEtiqueta(item, "Año de edición:");
-    //const edicionyear    = doc.querySelector('dd[itemprop="datePublished"]')?.textContent.trim() || "";
+        if (titulo === "El hombre que compró un automóvil") {
+            terminar = true;
+            break;
+        }
+       
+    };
+
+    //.. Año de edición: <dd itemprop="datePublished">2026</dd>
+    const edicionyear = doc.querySelector('dd[itemprop="datePublished"]')?.innerText.trim() || "";
+    const paginas     = doc.querySelector('dd[itemprop="numberOfPages"]')?.innerText.trim() || "";
     
-    //const paginas        = ""; //texto(item.querySelector('dd[itemprop="numberOfPages"]')) || buscarTextoPorEtiqueta(item, "Páginas:");
-    //const encuadernacion = ""; //buscarTextoPorEtiqueta(item, "Encuadernación:");
-    //const alto           = ""; //buscarTextoPorEtiqueta(item, "Alto:");
-    //const ancho          = ""; //buscarTextoPorEtiqueta(item, "Ancho:");
-    //const coleccion      = ""; //buscarTextoPorEtiqueta(item, "Colección:");
-    //const ilustracion    = ""; //buscarTextoPorEtiqueta(item, "Ilustración:");
-    //const sinopsis       = ""; //texto(item.querySelector('p[itemprop="description"]')) || buscarTextoPorEtiqueta(item, "Sinopsis:");
+    //.. Alto y Ancho en cm
+    const ddsGenre    = doc.querySelectorAll('dd[itemprop="genre"]');
+    const alto        = ddsGenre[0]?.textContent.trim() || "";
+    const ancho       = ddsGenre[1]?.textContent.trim() || "";
 
-    //salidaFinal += `
-    //    <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
-    //    <div class="dato"><span>Páginas:</span> ${paginas}</div>
-    //    <div class="dato"><span>Encuadernación:</span> ${encuadernacion}</div>
-    //    <div class="dato"><span>Alto:</span> ${alto}</div>
-    //    <div class="dato"><span>Ancho:</span> ${ancho}</div>
-    //    <div class="dato"><span>Colección:</span> ${coleccion}</div>
-    //    <div class="dato"><span>Ilustración:</span> ${ilustracion}</div>
-    //    <div class="dato"><span>Sinopsis:</span> ${sinopsis}</div>
-    //    </div>
-    //`;
+    //.. Colección e Ilustración
+    const coleccion   = ddsGenre[2]?.textContent.trim() || "";
+    const ilustracion = ddsGenre[3]?.textContent.trim() || "";
 
-    document.getElementById("resultado").innerHTML = salidaFinal || "<p>No se encontraron datos.</p>";
+    //.. Sinopsis
+    const sinopsis    = doc.querySelector('#tabsinopsis p[itemprop="description"]')?.textContent.trim() || "";
+
+    salidaFinal2 += `
+        <div class="bloque">
+            <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
+            <div class="dato"><span>Páginas:</span>        ${paginas}</div>
+            <div class="dato"><span>Alto:</span>           ${alto}</div>
+            <div class="dato"><span>Ancho:</span>          ${ancho}</div>
+            <div class="dato"><span>Colección:</span>      ${coleccion}</div>
+            <div class="dato"><span>Ilustración:</span>    ${ilustracion}</div>
+            <div class="dato"><span>Ilustración:</span>    ${sinopsis}</div>
+        </div>
+    `;
+
+    // ⭐ Mostrar todo en pantalla
+    document.getElementById("resultado").innerHTML = salidaFinal + salidaFinal2;
+
+    if (terminar) return;
 
 }
+
+//.. Function para hallar Alto y Ancho
+// busca todos los dt y sus dd siguientes y empareja por texto del dt
+function ddDelDt(ficha, etiqueta) {
+    const dts = [...ficha.querySelectorAll('dt')];
+    for (const dt of dts) {
+        if (dt.textContent.replace(/\s+/g, ' ').includes(etiqueta)) {
+        let sib = dt.nextElementSibling;
+        while (sib) {
+            if (sib.tagName === 'DD') return sib.textContent.trim();
+            sib = sib.nextElementSibling;
+        }
+        }
+    }
+    return "";
+}
+
 </script>
 
 </body>

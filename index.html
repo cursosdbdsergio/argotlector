@@ -151,7 +151,7 @@ function leerDatos() {
     let salidaFinal  = "";
     let salidaFinal2 = "";
     let contador     = 0;
-    let terminar     = false; //.. para controlar que solo lea el primero 
+    //let terminar     = false; //.. para controlar que solo lea el primero 
 
     // ⭐ Procesamos cada bloque <li>
     //items.forEach((item) => {
@@ -180,12 +180,12 @@ function leerDatos() {
         //.. Otros datos
         let   detalles_temporal = item.querySelector(".portada a")?.getAttribute("href") || "";
         const detalles          = "https://www.argot.es" + detalles_temporal;
-        const foto           = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
-        const titulo         = item.querySelector("dd.title a")?.innerText.trim() || "";
-        const descuento      = item.querySelector(".discount")?.innerText.trim() || "";
-        const disponibilidad = item.querySelector("dd.disponibilidad")?.innerText.trim() || "";
-        const precioAnterior = item.querySelector("p.precio strike")?.innerText.trim() || "";
-        const precioActual   = item.querySelector("p.precio strong")?.innerText.trim() || "";
+        const foto              = item.querySelector(".portada img.foto")?.getAttribute("src") || "";
+        const titulo            = item.querySelector("dd.title a")?.innerText.trim() || "";
+        const descuento         = item.querySelector(".discount")?.innerText.trim() || "";
+        const disponibilidad    = item.querySelector("dd.disponibilidad")?.innerText.trim() || "";
+        const precioAnterior    = item.querySelector("p.precio strike")?.innerText.trim() || "";
+        const precioActual      = item.querySelector("p.precio strong")?.innerText.trim() || "";
 
         // ⭐ Construimos el bloque de salida solo si detalles_temporal != ""
         if (detalles_temporal !== "") {
@@ -209,63 +209,63 @@ function leerDatos() {
             `;
         }
 
-        if (titulo === "El hombre que compró un automóvil") {
-            terminar = true;
-            break;
-        }
+        //if (titulo === "El hombre que compró un automóvil") {
+        //    terminar = true;
+        //    break;
+        //}
        
     };
 
     //.. Año de edición: <dd itemprop="datePublished">2026</dd>
-    const edicionyear = doc.querySelector('dd[itemprop="datePublished"]')?.innerText.trim() || "";
-    const paginas     = doc.querySelector('dd[itemprop="numberOfPages"]')?.innerText.trim() || "";
+    //const edicionyear = doc.querySelector('dd[itemprop="datePublished"]')?.innerText.trim() || "";
+    //const paginas     = doc.querySelector('dd[itemprop="numberOfPages"]')?.innerText.trim() || "";
     
     //.. Alto y Ancho en cm
-    const ddsGenre    = doc.querySelectorAll('dd[itemprop="genre"]');
-    const alto        = ddsGenre[0]?.textContent.trim() || "";
-    const ancho       = ddsGenre[1]?.textContent.trim() || "";
+    //const ddsGenre    = doc.querySelectorAll('dd[itemprop="genre"]');
+    //const alto        = ddsGenre[0]?.textContent.trim() || "";
+    //const ancho       = ddsGenre[1]?.textContent.trim() || "";
 
     //.. Colección e Ilustración
-    const coleccion   = ddsGenre[2]?.textContent.trim() || "";
-    const ilustracion = ddsGenre[3]?.textContent.trim() || "";
+    //const coleccion   = ddsGenre[2]?.textContent.trim() || "";
+    //const ilustracion = ddsGenre[3]?.textContent.trim() || "";
 
     //.. Sinopsis
-    const sinopsis    = doc.querySelector('#tabsinopsis p[itemprop="description"]')?.textContent.trim() || "";
+    //const sinopsis    = doc.querySelector('#tabsinopsis p[itemprop="description"]')?.textContent.trim() || "";
 
-    salidaFinal2 += `
-        <div class="bloque">
-            <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
-            <div class="dato"><span>Páginas:</span>        ${paginas}</div>
-            <div class="dato"><span>Alto:</span>           ${alto}</div>
-            <div class="dato"><span>Ancho:</span>          ${ancho}</div>
-            <div class="dato"><span>Colección:</span>      ${coleccion}</div>
-            <div class="dato"><span>Ilustración:</span>    ${ilustracion}</div>
-            <div class="dato"><span>Ilustración:</span>    ${sinopsis}</div>
-        </div>
-    `;
+    //salidaFinal2 += `
+    //    <div class="bloque">
+    //        <div class="dato"><span>Año de edición:</span> ${edicionyear}</div>
+    //        <div class="dato"><span>Páginas:</span>        ${paginas}</div>
+    //        <div class="dato"><span>Alto:</span>           ${alto}</div>
+    //        <div class="dato"><span>Ancho:</span>          ${ancho}</div>
+    //        <div class="dato"><span>Colección:</span>      ${coleccion}</div>
+    //        <div class="dato"><span>Ilustración:</span>    ${ilustracion}</div>
+    //        <div class="dato"><span>Ilustración:</span>    ${sinopsis}</div>
+    //    </div>
+    //`;
 
     // ⭐ Mostrar todo en pantalla
-    document.getElementById("resultado").innerHTML = salidaFinal + salidaFinal2;
+    //document.getElementById("resultado").innerHTML = salidaFinal + salidaFinal2;
 
-    if (terminar) return;
+    //if (terminar) return;
 
 }
 
 //.. Function para hallar Alto y Ancho
 // busca todos los dt y sus dd siguientes y empareja por texto del dt
-function ddDelDt(ficha, etiqueta) {
-    const dts = [...ficha.querySelectorAll('dt')];
-    for (const dt of dts) {
-        if (dt.textContent.replace(/\s+/g, ' ').includes(etiqueta)) {
-        let sib = dt.nextElementSibling;
-        while (sib) {
-            if (sib.tagName === 'DD') return sib.textContent.trim();
-            sib = sib.nextElementSibling;
-        }
-        }
-    }
-    return "";
-}
+//function ddDelDt(ficha, etiqueta) {
+//    const dts = [...ficha.querySelectorAll('dt')];
+//    for (const dt of dts) {
+//        if (dt.textContent.replace(/\s+/g, ' ').includes(etiqueta)) {
+//        let sib = dt.nextElementSibling;
+//        while (sib) {
+//            if (sib.tagName === 'DD') return sib.textContent.trim();
+//            sib = sib.nextElementSibling;
+//        }
+//        }
+//    }
+//    return "";
+//}
 
 </script>
 
